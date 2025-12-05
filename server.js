@@ -8,15 +8,18 @@ app.use(bodyParser.json({ limit: '50mb' })); // Aumentei o limite para aceitar f
 app.use(cors());
 
 // --- 1. LIGAR AO MONGODB ---
-const mongoURI = process.env.MONGO_URI || "mongodb+srv://aluno25936:Aluno25936@ecowallet.xxdyqc4.mongodb.net/?appName=ecowallet"
+mongoose.connect("mongodb+srv://aluno25936:Aluno25936@ecowallet.xxdyqc4.mongodb.net/ecowallet?retryWrites=true&w=majority&appName=ecowallet")
     .then(() => console.log("✅ MongoDB Conectado!"))
-    .catch(err => console.log("❌ Erro no Mongo:", err));
+    .catch(err => {
+        console.log("❌ ERRO GRAVE NO MONGO:");
+        console.error(err); // Isto vai mostrar o erro real nos logs
+    });
 
-// ==========================================
+// ==========================================   
 //    MODELOS (SCHEMAS)
 // ==========================================
 
-// 2. Modelo do Utilizador (Novo)
+// 2. Modelo do Utilizador (Novo)   
 const UserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true },
