@@ -116,6 +116,12 @@ app.delete('/despesas/:id', async (req, res) => {
     }
 });
 
+app.get('/ping', (req, res) => {
+    const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+    console.log('Ping recebido. DB Status: ${dbStatus}');
+    res.status(200).send('pong - DB: ${dbStatus}');
+});
+
 // Iniciar servidor
 const PORT = process.env.PORT || 5000;
 
