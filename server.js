@@ -23,7 +23,8 @@ mongoose.connect("mongodb+srv://aluno25936:Aluno25936@ecowallet.xxdyqc4.mongodb.
 const UserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true },
-    password: { type: String, required: true } // Nota: Em produção deverias encriptar isto
+    password: { type: String, required: true },
+    saldo: { type: Number, default: 0 } // <--- ADICIONA ISTO
 });
 const User = mongoose.model('User', UserSchema);
 
@@ -109,10 +110,27 @@ app.post('/despesas', async (req, res) => {
 // DELETE: Apagar despesa
 app.delete('/despesas/:id', async (req, res) => {
     try {
-        await Despesa.findByIdAndDelete(req.params.id);
+        const id = req.params.id;
+
+        // 1. Verificação de Segurança: O ID tem formato de MongoDB?
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.log(`⚠️ Recebi um ID inválido do Android: ${id}`);
+            return res.status(400).json({ error: "Formato de ID inválido. O MongoDB precisa de um ObjectId (String)." });
+        }
+
+        // 2. Tentar apagar
+        const despesaApagada = await Despesa.findByIdAndDelete(id);
+
+        if (!despesaApagada) {
+            return res.status(404).json({ error: "Despesa não encontrada" });
+        }
+
+        console.log(`✅ Despesa ${id} apagada com sucesso.`);
         res.json({ message: "Apagado com sucesso" });
+
     } catch (e) {
-        res.status(500).json({ error: "Erro ao apagar" });
+        console.error("❌ ERRO NO DELETE:", e); // Isto mostra o erro no terminal do servidor
+        res.status(500).json({ error: "Erro interno no servidor" });
     }
 });
 
