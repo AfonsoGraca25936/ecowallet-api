@@ -30,12 +30,13 @@ const User = mongoose.model('User', UserSchema);
 
 // 3. Modelo da Despesa
 const DespesaSchema = new mongoose.Schema({
-    userId: String, // Fundamental para ligar a despesa ao utilizador
+    _id: { type: String, required: true }, // <--- ESTA LINHA É FUNDAMENTAL
+    userId: String,
     titulo: String,
     valor: Number,
     categoria: String,
     data: String,
-    fotoCaminho: String // Base64 ou nome do ficheiro
+    fotoCaminho: String
 });
 const Despesa = mongoose.model('Despesa', DespesaSchema);
 
