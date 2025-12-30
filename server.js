@@ -133,6 +133,29 @@ app.delete('/despesas/:id', async (req, res) => {
     }
 });
 
+app.put('/users/:id/saldo', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { saldo } = req.body;
+
+        // Atualiza o saldo na base de dados do MongoDB
+        const userAtualizado = await User.findByIdAndUpdate(
+            id,
+            { saldo: saldo },
+            { new: true } // Devolve o utilizador já atualizado
+        );
+
+        if (!userAtualizado) {
+            return res.status(404).json({ error: "Utilizador não encontrado" });
+        }
+        
+        res.json({ message: "Saldo atualizado", saldo: userAtualizado.saldo });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: "Erro ao atualizar saldo" });
+    }
+});
+
 app.get('/ping', (req, res) => {
     const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
     console.log('Ping recebido. DB Status: ${dbStatus}');
