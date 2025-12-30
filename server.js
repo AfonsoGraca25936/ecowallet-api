@@ -113,16 +113,14 @@ app.delete('/despesas/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        // 1. Verificação de Segurança: O ID tem formato de MongoDB?
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            console.log(`⚠️ Recebi um ID inválido do Android: ${id}`);
-            return res.status(400).json({ error: "Formato de ID inválido. O MongoDB precisa de um ObjectId (String)." });
-        }
-
-        // 2. Tentar apagar
+        // REMOVEMOS A VERIFICAÇÃO "isValid(id)" PORQUE AGORA USAMOS UUIDs
+        
+        // Tentar apagar diretamente
         const despesaApagada = await Despesa.findByIdAndDelete(id);
 
         if (!despesaApagada) {
+            // Se não encontrou, não faz mal (pode já ter sido apagada)
+            // Retornamos 200 ou 404, mas para a app o 404 é tranquilo
             return res.status(404).json({ error: "Despesa não encontrada" });
         }
 
@@ -130,7 +128,7 @@ app.delete('/despesas/:id', async (req, res) => {
         res.json({ message: "Apagado com sucesso" });
 
     } catch (e) {
-        console.error("❌ ERRO NO DELETE:", e); // Isto mostra o erro no terminal do servidor
+        console.error("❌ ERRO NO DELETE:", e);
         res.status(500).json({ error: "Erro interno no servidor" });
     }
 });
