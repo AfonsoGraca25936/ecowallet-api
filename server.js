@@ -100,11 +100,13 @@ app.get('/despesas', async (req, res) => {
 // POST: Criar nova despesa
 app.post('/despesas', async (req, res) => {
     try {
+        console.log("Recebido:", req.body); // Ajuda a debugar
         const novaDespesa = new Despesa(req.body);
         const resultado = await novaDespesa.save();
         res.json(resultado); 
     } catch (e) {
-        res.status(500).json({ error: "Erro ao criar despesa" });
+        console.error("❌ ERRO NO MONGO:", e.message);
+        res.status(500).json({ error: "Erro ao criar despesa", details: e.message });
     }
 });
 
