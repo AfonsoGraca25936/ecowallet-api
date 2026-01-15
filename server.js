@@ -164,6 +164,31 @@ app.get('/ping', (req, res) => {
     res.status(200).send('pong - DB: ${dbStatus}');
 });
 
+// --- ROTA PARA ATUALIZAR UMA DESPESA EXISTENTE ---
+app.put('/despesas/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const dadosAtualizados = req.body;
+
+        // Procura pelo ID (que é uma String/UUID) e atualiza
+        const resultado = await Despesa.findByIdAndUpdate(
+            id, 
+            dadosAtualizados, 
+            { new: true } // Devolve o objeto já com as alterações
+        );
+
+        if (!resultado) {
+            return res.status(404).json({ error: "Despesa não encontrada" });
+        }
+
+        console.log(`✅ Despesa ${id} atualizada com sucesso.`);
+        res.json(resultado);
+    } catch (e) {
+        console.error("❌ ERRO NO UPDATE:", e);
+        res.status(500).json({ error: "Erro ao atualizar despesa", details: e.message });
+    }
+});
+
 // Iniciar servidor
 const PORT = process.env.PORT || 5000;
 
